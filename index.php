@@ -178,7 +178,7 @@ if(isset($_GET['category'])){
                 </div>
                 <div class='details'>
                     <div class='book-name'>
-                    <h2>" . $row["bname"] . "</h2>
+                    <h3>" . $row["bname"] . "</h3>
                     <h4>" . 'Author: ' . $row["bauthor"] . "</h4>
                     <h4>" . 'Faculty: ' . $row["categoryName"] . "</h4>
                     <h4>" . 'Sem/Year: ' . $row["subcategoryName"] . "</h4>
