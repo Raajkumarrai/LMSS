@@ -44,11 +44,12 @@ body {
   position: relative;
   border-radius: 3px;
   height: 45px;
-  border: none;
   border: 1px solid rgba(255, 255, 255, 0.6);
+  margin-bottom: -5px;
 }
 .animationfld input {
   position: absolute;
+  width: 100%;
   inset: 0;
   outline: none;
   border: none;
@@ -129,8 +130,16 @@ label {
   cursor: pointer;
 }
 
-.error {
-  background-color: rgb(255, 8, 0);
+.error{
+  /* background-color: rgb(255, 8, 0); */
+  display: none;
+  width: 100%;
+  margin-top: -20px;
+  margin-bottom: -18px;
+  letter-spacing: 1px;
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: red;
 }
 .success {
   background-color: rgb(0, 195, 0);
@@ -157,4 +166,8 @@ label {
 .notificationshow .name {
   font-weight: 600;
   letter-spacing: 0;
+}
+.regErr {
+  margin-top: -4px;
+  margin-bottom: -4px;
 }
