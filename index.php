@@ -141,7 +141,7 @@ if(isset($_GET['category'])){
         <!-- Book Section -->
         <div class="bookNav">
             <div class="popular">
-                <h3>Popular</h3>
+                <h3>Latest</h3>
             </div>
             <div class="nav-list">
                 <ul>

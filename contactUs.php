@@ -6,6 +6,17 @@
     <link rel="stylesheet" href="./contact.css">
     <title>Contact Us</title>
 </head>
+<style>
+    #Phnumber::-webkit-inner-spin-button, #Phnumber::-webkit-outer-spin-button{
+        display: none;
+    }
+    .error{
+        color: red;
+        font-size: 11px;
+        font-weight: 400;
+        margin: 5px;
+    }
+</style>
 
 <body>
     <?php include "./common/header.php"; ?>
@@ -30,17 +41,24 @@
                     </div>
                     <div class="contact-method">
                         <div>
-                            <label for="email">E-mail</label><br>
-                            <input class="shadow" type="email" name="email" id="email" placeholder="example123@gmail.com" required>
+                            <div>
+                                <label for="email">E-mail</label><br>
+                                <input class="shadow" type="email" name="email" id="email" placeholder="example123@gmail.com" required>
+                            </div>
+                            <span id="emailError" class="error regErr"></span>
                         </div>
                         <div>
-                            <label for="phone">Phone Number</label><br>
-                            <input class="shadow" type="tel" name="phone" id="phone" placeholder="+977 000-000-0000" required>
+                            <div>
+                                <label for="phone">Phone Number</label><br>
+                                <input class="shadow" type="number" name="phone" id="Phnumber" placeholder="+977 000-000-0000" required>
+                            </div>
+                            <span id="phoneError" class="error regErr"></span>
                         </div>
-                    </div>
+                        </div>
                     <div class="message">
                         <label for="message">Message or Enquiry</label><br>
                         <textarea class="shadow" name="message" id="message" cols="75" rows="10" placeholder="Write something..." required></textarea>
+                        <span id="character-count">0</span>/<span id="character-limit">200</span>
                     </div>
                     <div class="submit-btn">
                         <button name="contactSubmit" type="submit">Send Message</button>
@@ -290,6 +308,86 @@
 
     <!-- including footer content  -->
     <?php include "./common/footer.php"; ?>
+
+
+    <script>
+        const emailInput = document.getElementById("email");
+        const numberPh = document.getElementById("Phnumber");
+        const emailError = document.getElementById("emailError");
+        const phoneError = document.getElementById("phoneError");
+        // Email validation
+const emailValidation = () => {
+  const email = emailInput.value.trim();
+  const emailRegex = /^\S+@\S+\.\S+$/;
+  if (email === "") {
+    emailError.textContent = "Email is required.";
+    emailError.style.display = "block";
+    return false;
+  } else if (!emailRegex.test(email)) {
+    emailError.textContent = "Invalid email format.";
+    emailError.style.display = "block";
+    return false;
+  } else if (/[0-9]/.test(email[0])) {
+    emailError.textContent = "Email should not start with a number.";
+    emailError.style.display = "block";
+    return false;
+  } else {
+    emailError.style.display = "none";
+    return true;
+  }
+};
+
+// Phone validation
+const phoneValidation = () => {
+  const phoneNumber = numberPh.value.trim();
+  const phoneRegex = /^\d{10}$/;
+  if (phoneNumber === "") {
+    phoneError.textContent = "Phone number is required.";
+    phoneError.style.display = "block";
+    return false;
+  } else if (!phoneRegex.test(phoneNumber)) {
+    phoneError.textContent = "Phone number should be 10 digits.";
+    phoneError.style.display = "block";
+    return false;
+  } else {
+    phoneError.style.display = "none";
+    return true;
+  }
+};
+
+emailInput.addEventListener("input", emailValidation);
+numberPh.addEventListener("input", phoneValidation);
+
+// Form submission validation
+const form = document.querySelector("form");
+form.addEventListener("submit", function (event) {
+  if (!emailValidation() || !phoneValidation()) {
+    event.preventDefault();
+  } else {
+    // Form submission logic goes here
+    // Uncomment the line below if you want to allow form submission
+    // event.preventDefault();
+    return true;
+  }
+});
+
+const textarea = document.getElementById('message');
+const characterCount = document.getElementById('character-count');
+const characterLimit = document.getElementById('character-limit').textContent;
+
+textarea.addEventListener('input', function() {
+  const inputText = textarea.value;
+  const remainingCharacters = characterLimit - inputText.length;
+
+  characterCount.textContent = inputText.length;
+
+  if (remainingCharacters < 0) {
+    textarea.value = inputText.substring(0, characterLimit);
+    characterCount.textContent = characterLimit;
+  }
+});
+
+    </script>
 
 </body>
 
