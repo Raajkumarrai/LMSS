@@ -1,8 +1,8 @@
 <?php
-include "./common/backendConnector.php";
 if (session_status() === PHP_SESSION_NONE) {
     session_start(); // Start the session
 }
+include "./common/backendConnector.php";
 
 // db connection in (lms) db
 $con = mysqli_connect($host, $dbUserName, $dbPassword, $database);
@@ -54,45 +54,52 @@ if (isset($_GET['category'])) {
     }
 }
 if (isset($_POST['preorder'])) {
-    $bookid = $_POST['book_id'];
-    $name = $_SESSION['name'];
-    $userid = $_SESSION['id'];
-    $isreturn = 0;
-    $istaken = 0;
+    $userId = $_SESSION['id'];
+    $OrderQueryPrev = "SELECT * FROM bookorder WHERE userid = $userId";
+    $resOrderQueryPrev = mysqli_query($con, $OrderQueryPrev);
+    if (mysqli_num_rows($resOrderQueryPrev) < 6) {
+        $bookid = $_POST['book_id'];
+        $name = $_SESSION['name'];
+        $userid = $_SESSION['id'];
+        $isreturn = 0;
+        $istaken = 0;
 
-    $bookQuery = "SELECT * FROM books WHERE id = $bookid";
-    $resBook = mysqli_query($con, $bookQuery);
+        $bookQuery = "SELECT * FROM books WHERE id = $bookid";
+        $resBook = mysqli_query($con, $bookQuery);
 
-    // Check if the query executed successfully
-    if ($resBook) {
-        if (mysqli_num_rows($resBook) < 1) {
-            die("Book not found");
-        }
-
-        $rowBook = mysqli_fetch_assoc($resBook);
-
-        // Insert query
-        $sqlOrder = "INSERT INTO bookorder (username, userid, bookid, isreturn, istaken) VALUES ('$name', '$userid', '$bookid', '$isreturn', '$istaken')";
-        $resBook = mysqli_query($con, $sqlOrder);
-
+        // Check if the query executed successfully
         if ($resBook) {
-            $newQuantity = intval($rowBook['bquantity']) - 1;
-            $sqlBook = "UPDATE books SET bquantity = '$newQuantity' WHERE id = '$bookid'";
-            $resBook = mysqli_query($con, $sqlBook);
+            if (mysqli_num_rows($resBook) < 1) {
+                die("Book not found");
+            }
+
+            $rowBook = mysqli_fetch_assoc($resBook);
+
+            // Insert query
+            $sqlOrder = "INSERT INTO bookorder (username, userid, bookid, isreturn, istaken) VALUES ('$name', '$userid', '$bookid', '$isreturn', '$istaken')";
+            $resBook = mysqli_query($con, $sqlOrder);
 
             if ($resBook) {
-                header("Location: " . $_SERVER['PHP_SELF']);
+                $newQuantity = intval($rowBook['bquantity']) - 1;
+                $sqlBook = "UPDATE books SET bquantity = '$newQuantity' WHERE id = '$bookid'";
+                $resBook = mysqli_query($con, $sqlBook);
+
+                if ($resBook) {
+                    header("Location: " . $_SERVER['PHP_SELF']);
+                    exit();
+                }
+            } else {
+                // Handle insertion failure
+                echo "Record not inserted: " . mysqli_error($con);
                 exit();
             }
         } else {
-            // Handle insertion failure
-            echo "Record not inserted: " . mysqli_error($con);
+            // Handle query execution failure
+            echo "Query failed: " . mysqli_error($con);
             exit();
         }
     } else {
-        // Handle query execution failure
-        echo "Query failed: " . mysqli_error($con);
-        exit();
+        echo "You cannot order please waite for a day.";
     }
 }
 
@@ -117,7 +124,7 @@ if (isset($_POST['preorder'])) {
     <!-- Main container  -->
     <div class="container">
         <!-- First main container -->
-        <div class="mini-container" id="hero-section">
+        <div class="mini-container" style="overflow-x: hidden;" id="hero-section">
             <div class="sub-content1">
                 <div class="para">
                     <h1>Library Management System</h1>
