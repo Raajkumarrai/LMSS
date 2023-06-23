@@ -18,7 +18,7 @@ $id = $_SESSION['id'];
 $name = $_SESSION['name'];
 $email = $_SESSION['email'];
 
-$sqlFetch = "SELECT * FROM bookorder WHERE userid = $id";
+$sqlFetch = "SELECT * FROM bookorder WHERE userid = $id AND isreturn = 0";
 $resFetch = mysqli_query($con, $sqlFetch);
 
 ?>
@@ -97,7 +97,7 @@ $resFetch = mysqli_query($con, $sqlFetch);
             height: 100vh;
             width: 100%;
             background-color: rgba(0, 0, 0, 0.2);
-            position: absolute;
+            position: fixed;
             z-index: 10000000000000000000000000000000000000000;
 
             inset: 0;
