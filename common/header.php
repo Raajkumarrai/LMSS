@@ -1,10 +1,12 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start(); // Start the session
+}
+
 if (!isset($_SESSION['status'])) {
     header("Location: /lms/auth/login.php");
 }
-?>
-<?php
+
 $id = $_SESSION['id'];
 $name = $_SESSION['name'];
 $email = $_SESSION['email'];

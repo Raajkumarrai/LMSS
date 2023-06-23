@@ -27,12 +27,28 @@ if (isset($_POST['loginSubmit'])) {
             $_SESSION['status'] = $row['status'];
             $_SESSION['name'] = $row['name'];
             $_SESSION['email'] = $row['email'];
+            $_SESSION['id'] = $row['id'];
+
             if (intval($row['status']) != 1) {
                 header("Location: /lms/");
             } else {
                 header("Location: /lms/admin/dashboard.php");
             }
         } else {
+            echo "<div class='showNotificaion error' id='showNotification'>
+        <div class='notificationshow'>
+            <div class='name'>
+                Error:
+            </div>
+            <div class='message'>
+                Invalid credential
+            </div>
+        </div>
+    </div>";
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
+        }
+    } else {
         echo "<div class='showNotificaion error' id='showNotification'>
         <div class='notificationshow'>
             <div class='name'>
@@ -43,22 +59,8 @@ if (isset($_POST['loginSubmit'])) {
             </div>
         </div>
     </div>";
-    header("Location: ".$_SERVER['PHP_SELF']);
-    exit();
-        }}
-    else{
-    echo "<div class='showNotificaion error' id='showNotification'>
-        <div class='notificationshow'>
-            <div class='name'>
-                Error:
-            </div>
-            <div class='message'>
-                Invalid credential
-            </div>
-        </div>
-    </div>";
-    header("Location: ".$_SERVER['PHP_SELF']);
-    exit();
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
     }
 } ?>
 
@@ -79,7 +81,7 @@ if (isset($_POST['loginSubmit'])) {
         <h2>LMS LOGIN</h2>
         <form action="./login.php" method="post">
             <div class="user-box" onclick="userBoxClk">
-                <input type="text" name="email" id="username" required onchange="inpvalChange()" autocomplete="off"/>
+                <input type="text" name="email" id="username" required onchange="inpvalChange()" autocomplete="off" />
                 <label for="">Email</label>
             </div>
             <span id="emailError" class="error"></span>

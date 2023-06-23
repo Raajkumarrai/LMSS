@@ -1,6 +1,6 @@
 <?php
 
-$conn = mysqli_connect('localhost','root','','lms');
+$conn = mysqli_connect('localhost','root','','lmss');
 
 if(!$conn){
     die("Connection Failed");
@@ -28,6 +28,3 @@ else{
     echo "Failed";
 }
 }
-
-
-?>

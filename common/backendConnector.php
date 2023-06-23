@@ -1,8 +1,7 @@
-<?php 
+<?php
 $host = "localhost";
 $dbUserName = "root";
 $dbPassword = "";
-$database = "lms";
+$database = "lmss";
 $frontHost = "http://localhost";
-$fileFront = "http://localhost/lms/admin/"
-?>
+$fileFront = "http://localhost/lms/admin/";
