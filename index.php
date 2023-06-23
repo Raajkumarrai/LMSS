@@ -1,13 +1,9 @@
 <?php
-// session_start();
-// $status = $_SESSION['status'];
-// if (intval($status) != 1) {
-//     header("Location: /lms");
-// }
-?>
-
-<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start(); // Start the session
+}
 include "./common/backendConnector.php";
+
 // db connection in (lms) db
 $con = mysqli_connect($host, $dbUserName, $dbPassword, $database);
 if (!$con) {
@@ -50,13 +46,63 @@ if (isset($_GET['search'])) {
     }
 }
 
-if(isset($_GET['category'])){
+if (isset($_GET['category'])) {
     $cat = $_GET['category'];
-    if($cat!='all'){
+    if ($cat != 'all') {
         $sqlFetchAll = "SELECT * FROM `books` where categoryName = '$cat'";
         $res = mysqli_query($con, $sqlFetchAll);
     }
 }
+if (isset($_POST['preorder'])) {
+    $userId = $_SESSION['id'];
+    $OrderQueryPrev = "SELECT * FROM bookorder WHERE userid = $userId";
+    $resOrderQueryPrev = mysqli_query($con, $OrderQueryPrev);
+    if (mysqli_num_rows($resOrderQueryPrev) < 6) {
+        $bookid = $_POST['book_id'];
+        $name = $_SESSION['name'];
+        $userid = $_SESSION['id'];
+        $isreturn = 0;
+        $istaken = 0;
+
+        $bookQuery = "SELECT * FROM books WHERE id = $bookid";
+        $resBook = mysqli_query($con, $bookQuery);
+
+        // Check if the query executed successfully
+        if ($resBook) {
+            if (mysqli_num_rows($resBook) < 1) {
+                die("Book not found");
+            }
+
+            $rowBook = mysqli_fetch_assoc($resBook);
+
+            // Insert query
+            $sqlOrder = "INSERT INTO bookorder (username, userid, bookid, isreturn, istaken) VALUES ('$name', '$userid', '$bookid', '$isreturn', '$istaken')";
+            $resBook = mysqli_query($con, $sqlOrder);
+
+            if ($resBook) {
+                $newQuantity = intval($rowBook['bquantity']) - 1;
+                $sqlBook = "UPDATE books SET bquantity = '$newQuantity' WHERE id = '$bookid'";
+                $resBook = mysqli_query($con, $sqlBook);
+
+                if ($resBook) {
+                    header("Location: " . $_SERVER['PHP_SELF']);
+                    exit();
+                }
+            } else {
+                // Handle insertion failure
+                echo "Record not inserted: " . mysqli_error($con);
+                exit();
+            }
+        } else {
+            // Handle query execution failure
+            echo "Query failed: " . mysqli_error($con);
+            exit();
+        }
+    } else {
+        echo "You cannot order please waite for a day.";
+    }
+}
+
 
 
 ?>
@@ -78,7 +124,7 @@ if(isset($_GET['category'])){
     <!-- Main container  -->
     <div class="container">
         <!-- First main container -->
-        <div class="mini-container" id="hero-section">
+        <div class="mini-container" style="overflow-x: hidden;" id="hero-section">
             <div class="sub-content1">
                 <div class="para">
                     <h1>Library Management System</h1>
@@ -146,19 +192,19 @@ if(isset($_GET['category'])){
             <div class="nav-list">
                 <ul>
                     <li><a href="?category=all">ALL</a></li>
-                    <?php 
+                    <?php
                     $i = 0;
-                    if(mysqli_num_rows($rescategory)>0){
-                        while($row = mysqli_fetch_assoc($rescategory)){
+                    if (mysqli_num_rows($rescategory) > 0) {
+                        while ($row = mysqli_fetch_assoc($rescategory)) {
                             $i++;
-                            if($i>5){
+                            if ($i > 5) {
                                 break;
                             }
-                            echo '<li><a href="?category='.strtolower($row["cname"]).'">'.$row["cname"].'</a></li>';
+                            echo '<li><a href="?category=' . strtolower($row["cname"]) . '">' . $row["cname"] . '</a></li>';
                         }
                     }
                     ?>
-                    
+
                 </ul>
             </div>
         </div>
@@ -189,7 +235,10 @@ if(isset($_GET['category'])){
                     </div>
                     <p>" . 'Quantity: ' . $row["bquantity"] . "</p>
                     <div class='pre-order-btn'>
-                        <a href='#'><button>Pre-Order</button></a>
+                        <form action='./index.php' method='post'>
+                            <input type='hidden' name='book_id' value=" . $row['id'] . " />
+                            <button name='preorder'>Pre-Order</button>
+                        </form>
                     </div>
                 </div>
             </div>  ";
