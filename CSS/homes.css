@@ -48,10 +48,20 @@
 }
 
 /* For login Button */
-.lg-btn {
-  padding: 8px 25px;
+.lg-btn,
+.preorderBtn_sty {
+  padding: 7px 20px;
   background-color: rgba(144, 132, 214, 1);
-  border-radius: 3px;
+  border-radius: 2px;
+  border: none;
+  outline: none;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.preorderBtn_sty:hover {
+  background-color: rgb(50, 45, 80);
+  color: white;
 }
 
 /* For displaying active border in item buttom */

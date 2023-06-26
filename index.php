@@ -115,7 +115,7 @@ if (isset($_POST['preorder'])) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./CSS/home.css">
+    <link rel="stylesheet" href="./CSS/homes.css">
     <title>LMS Home</title>
 </head>
 
@@ -237,7 +237,7 @@ if (isset($_POST['preorder'])) {
                     <div class='pre-order-btn'>
                         <form action='./index.php' method='post'>
                             <input type='hidden' name='book_id' value=" . $row['id'] . " />
-                            <button name='preorder'>Pre-Order</button>
+                            <button name='preorder' class='preorderBtn_sty'>Pre-Order</button>
                         </form>
                     </div>
                 </div>

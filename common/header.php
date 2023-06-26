@@ -26,7 +26,7 @@ $resFetch = mysqli_query($con, $sqlFetch);
 <html>
 
 <head>
-    <link rel="stylesheet" href="./CSS/home.css">
+    <link rel="stylesheet" href="./CSS/homes.css">
     <style>
         #userIcon svg {
             height: 43px;
