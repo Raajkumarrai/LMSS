@@ -84,7 +84,7 @@ if (isset($_POST['loginSubmit'])) {
                 <input type="text" name="email" id="username" required onchange="inpvalChange()" autocomplete="off" />
                 <label for="">Email</label>
             </div>
-            <span id="emailError" class="error"></span>
+            <span id="emailError" class="error" style="background-color:transparent; color:red;"></span>
             <div class="user-box passwordbox" onclick="userBoxClk">
                 <input type="password" name="password" id="passowrd" required onchange="inpvalChange()" />
                 <div id="eyeOpen" class="eye" onclick="eyeOpen()">

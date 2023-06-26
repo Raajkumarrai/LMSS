@@ -55,7 +55,7 @@ if (isset($_GET['category'])) {
 }
 if (isset($_POST['preorder'])) {
     $userId = $_SESSION['id'];
-    $OrderQueryPrev = "SELECT * FROM bookorder WHERE userid = $userId AND isreturn=0";
+    $OrderQueryPrev = "SELECT * FROM bookorder WHERE userid = $userId AND isreturn = 0 AND isreturn=0";
     $resOrderQueryPrev = mysqli_query($con, $OrderQueryPrev);
 
     if (mysqli_num_rows($resOrderQueryPrev) < 6) {
@@ -124,7 +124,7 @@ if (isset($_POST['preorder'])) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./CSS/home.css">
+    <link rel="stylesheet" href="./CSS/homes.css">
     <title>LMS Home</title>
 </head>
 
@@ -302,7 +302,7 @@ if (isset($_POST['preorder'])) {
                     <div class='pre-order-btn'>
                         <form action='./index.php' method='post'>
                             <input type='hidden' name='book_id' value=" . $row['id'] . " />
-                            <button name='preorder'>Pre-Order</button>
+                            <button name='preorder' class='preorderBtn_sty'>Pre-Order</button>
                         </form>
                     </div>
                 </div>

@@ -60,7 +60,7 @@ if (isset($_GET['search'])) {
     // Check if the search value is set
     if (!empty($search)) {
         // Query with the search value
-        $sqlFetch = "SELECT * FROM users WHERE name LIKE '%$search%'";
+        $sqlFetch = "SELECT * FROM users WHERE name LIKE '%$search%' AND `restriction` = '1'";
         $resFetch = mysqli_query($con, $sqlFetch);
     }
 }

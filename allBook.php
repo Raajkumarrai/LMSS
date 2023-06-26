@@ -1,4 +1,7 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start(); // Start the session
+}
 include "./common/backendConnector.php";
 // db connection in (lms) db
 $con = mysqli_connect($host, $dbUserName, $dbPassword, $database);
@@ -6,25 +9,85 @@ if (!$con) {
     die("DB connection failed");
 }
 
+// Default values
+// $page = 1;
+// $totalFetch = 2;
+
+// // Check if page parameter is set
+// if (isset($_GET['page'])) {
+//     $page = intval($_GET['page']);
+//     $pageurl = $page;
+//     $totalFetch = $page * 2;
+// }
+
 $sqlFetchAll = "SELECT * FROM `books`";
 $res = mysqli_query($con, $sqlFetchAll);
 
 // for searching
-// Retrieve the search value from the GET request]
 if (isset($_GET['search'])) {
     $search = isset($_GET['search']) ? $_GET['search'] : '';
-
-    // Escape the search value to prevent SQL injection
     $search = mysqli_real_escape_string($con, $search);
 
-    // Check if the search value is set
     if (!empty($search)) {
-        // Query with the search value
         $sqlNote = "SELECT * FROM books WHERE bname LIKE '%$search%'";
         $res = mysqli_query($con, $sqlNote);
     }
 }
 
+if (isset($_POST['preorder'])) {
+    $userId = $_SESSION['id'];
+    $OrderQueryPrev = "SELECT * FROM bookorder WHERE userid = $userId AND isreturn = 0";
+    $resOrderQueryPrev = mysqli_query($con, $OrderQueryPrev);
+
+    if (mysqli_num_rows($resOrderQueryPrev) < 6) {
+        $bookid = $_POST['book_id'];
+        $name = $_SESSION['name'];
+        $userid = $_SESSION['id'];
+        $isreturn = 0;
+        $istaken = 0;
+
+        $bookQuery = "SELECT * FROM books WHERE id = $bookid";
+        $resBook = mysqli_query($con, $bookQuery);
+
+        if ($resBook) {
+            if (mysqli_num_rows($resBook) < 1) {
+                die("Book not found");
+            }
+
+            $rowBook = mysqli_fetch_assoc($resBook);
+
+            $sqlOrder = "INSERT INTO bookorder (username, userid, bookid, isreturn, istaken) VALUES ('$name', '$userid', '$bookid', '$isreturn', '$istaken')";
+            $resBook = mysqli_query($con, $sqlOrder);
+
+            if ($resBook) {
+                $newQuantity = intval($rowBook['bquantity']) - 1;
+                $sqlBook = "UPDATE books SET bquantity = '$newQuantity' WHERE id = '$bookid'";
+                $resBook = mysqli_query($con, $sqlBook);
+
+                if ($resBook) {
+                    $currentPage = $pageurl;
+                    $url = $_SERVER['PHP_SELF'] . "?page=" . $currentPage;
+                    header("Location: " . $url);
+                    exit();
+                } else {
+                    // Handle update failure
+                    echo "Failed to update book quantity: " . mysqli_error($con);
+                    exit();
+                }
+            } else {
+                // Handle insertion failure
+                echo "Failed to insert book order: " . mysqli_error($con);
+                exit();
+            }
+        } else {
+            // Handle query execution failure
+            echo "Query failed: " . mysqli_error($con);
+            exit();
+        }
+    } else {
+        echo "You cannot order, please wait for a day.";
+    }
+}
 ?>
 
 
@@ -36,7 +99,7 @@ if (isset($_GET['search'])) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./CSS/home.css">
+    <link rel="stylesheet" href="./CSS/homes.css">
     <link rel="stylesheet" href="./CSS/allBook.css">
     <title>All Books</title>
     <style>
@@ -80,8 +143,6 @@ if (isset($_GET['search'])) {
         <!-- div for border bar HR -->
         <hr>
 
-
-
         <!-- Books and books Details -->
         <div class="books-details">
             <?php
@@ -105,7 +166,10 @@ if (isset($_GET['search'])) {
                     </div>
                     <p>" . 'Quantity: ' . $row["bquantity"] . "</p>
                     <div class='pre-order-btn'>
-                        <a href='#'><button>Pre-Order</button></a>
+                        <form action='./allBook.php' method='post'>
+                            <input type='hidden' name='book_id' value=" . $row['id'] . " />
+                            <button name='preorder' class='preorderBtn_sty'>Pre-Order</button>
+                        </form>
                     </div>
                 </div>
             </div>  ";
@@ -120,17 +184,17 @@ if (isset($_GET['search'])) {
 
 
         <!-- for next page or view more -->
-        <div class="page-break" style="margin-bottom: 15px;">
+        <!-- <div class="page-break" style="margin-bottom: 15px;">
             <div class="line-view">
 
             </div>
             <div>
-                <a href="#">View More</a>
+                <a href="?page=<?php echo $page + 1 ?>">View More</a>
             </div>
             <div class="line-view">
 
             </div>
-        </div>
+        </div> -->
 
     </div>
 
