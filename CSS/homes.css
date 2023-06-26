@@ -70,9 +70,7 @@
   position: relative;
 }
 /* Not underlying in last item */
-.list li:not(:last-child) a::before {
-  content: "";
-  position: absolute;
+.activeTracker {
   height: 3px;
   min-width: 20px;
   width: 40%;
