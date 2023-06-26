@@ -278,7 +278,6 @@ $resFetch = mysqli_query($con, $sqlFetch);
                         }
                         return false;
                     }
-
                     ?>
 
                     <li>

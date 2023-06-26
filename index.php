@@ -55,7 +55,7 @@ if (isset($_GET['category'])) {
 }
 if (isset($_POST['preorder'])) {
     $userId = $_SESSION['id'];
-    $OrderQueryPrev = "SELECT * FROM bookorder WHERE userid = $userId";
+    $OrderQueryPrev = "SELECT * FROM bookorder WHERE userid = $userId AND isreturn = 0";
     $resOrderQueryPrev = mysqli_query($con, $OrderQueryPrev);
     if (mysqli_num_rows($resOrderQueryPrev) < 6) {
         $bookid = $_POST['book_id'];

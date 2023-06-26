@@ -9,20 +9,26 @@ if (!$con) {
     die("DB connection failed");
 }
 
+// Default values
+// $page = 1;
+// $totalFetch = 2;
+
+// // Check if page parameter is set
+// if (isset($_GET['page'])) {
+//     $page = intval($_GET['page']);
+//     $pageurl = $page;
+//     $totalFetch = $page * 2;
+// }
+
 $sqlFetchAll = "SELECT * FROM `books`";
 $res = mysqli_query($con, $sqlFetchAll);
 
 // for searching
-// Retrieve the search value from the GET request]
 if (isset($_GET['search'])) {
     $search = isset($_GET['search']) ? $_GET['search'] : '';
-
-    // Escape the search value to prevent SQL injection
     $search = mysqli_real_escape_string($con, $search);
 
-    // Check if the search value is set
     if (!empty($search)) {
-        // Query with the search value
         $sqlNote = "SELECT * FROM books WHERE bname LIKE '%$search%'";
         $res = mysqli_query($con, $sqlNote);
     }
@@ -30,8 +36,9 @@ if (isset($_GET['search'])) {
 
 if (isset($_POST['preorder'])) {
     $userId = $_SESSION['id'];
-    $OrderQueryPrev = "SELECT * FROM bookorder WHERE userid = $userId";
+    $OrderQueryPrev = "SELECT * FROM bookorder WHERE userid = $userId AND isreturn = 0";
     $resOrderQueryPrev = mysqli_query($con, $OrderQueryPrev);
+
     if (mysqli_num_rows($resOrderQueryPrev) < 6) {
         $bookid = $_POST['book_id'];
         $name = $_SESSION['name'];
@@ -42,7 +49,6 @@ if (isset($_POST['preorder'])) {
         $bookQuery = "SELECT * FROM books WHERE id = $bookid";
         $resBook = mysqli_query($con, $bookQuery);
 
-        // Check if the query executed successfully
         if ($resBook) {
             if (mysqli_num_rows($resBook) < 1) {
                 die("Book not found");
@@ -50,7 +56,6 @@ if (isset($_POST['preorder'])) {
 
             $rowBook = mysqli_fetch_assoc($resBook);
 
-            // Insert query
             $sqlOrder = "INSERT INTO bookorder (username, userid, bookid, isreturn, istaken) VALUES ('$name', '$userid', '$bookid', '$isreturn', '$istaken')";
             $resBook = mysqli_query($con, $sqlOrder);
 
@@ -60,12 +65,18 @@ if (isset($_POST['preorder'])) {
                 $resBook = mysqli_query($con, $sqlBook);
 
                 if ($resBook) {
-                    header("Location: " . $_SERVER['PHP_SELF']);
+                    $currentPage = $pageurl;
+                    $url = $_SERVER['PHP_SELF'] . "?page=" . $currentPage;
+                    header("Location: " . $url);
+                    exit();
+                } else {
+                    // Handle update failure
+                    echo "Failed to update book quantity: " . mysqli_error($con);
                     exit();
                 }
             } else {
                 // Handle insertion failure
-                echo "Record not inserted: " . mysqli_error($con);
+                echo "Failed to insert book order: " . mysqli_error($con);
                 exit();
             }
         } else {
@@ -74,10 +85,9 @@ if (isset($_POST['preorder'])) {
             exit();
         }
     } else {
-        echo "You cannot order please waite for a day.";
+        echo "You cannot order, please wait for a day.";
     }
 }
-
 ?>
 
 
@@ -174,17 +184,17 @@ if (isset($_POST['preorder'])) {
 
 
         <!-- for next page or view more -->
-        <div class="page-break" style="margin-bottom: 15px;">
+        <!-- <div class="page-break" style="margin-bottom: 15px;">
             <div class="line-view">
 
             </div>
             <div>
-                <a href="#">View More</a>
+                <a href="?page=<?php echo $page + 1 ?>">View More</a>
             </div>
             <div class="line-view">
 
             </div>
-        </div>
+        </div> -->
 
     </div>
 
