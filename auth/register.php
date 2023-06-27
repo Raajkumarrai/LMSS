@@ -14,7 +14,6 @@ if (isset($_POST['registerSubmit'])) {
   $email = $_POST['email'];
   $password = $_POST['password'];
   $phnumber = $_POST['phnumber'];
-  $profession = $_POST['profession'];
   $status = 2;
 
   // Check if the email already exists
@@ -43,7 +42,7 @@ if (isset($_POST['registerSubmit'])) {
     $passhash = password_hash($password, PASSWORD_DEFAULT);
 
     // Insert query
-    $sql = "INSERT INTO `users` (`name`, `email`, `password`, `phnumber`, `profession`, `status`) VALUES ('$name', '$email', '$passhash', '$phnumber', '$profession', '$status')";
+    $sql = "INSERT INTO `users` (`name`, `email`, `password`, `phnumber`, `status`) VALUES ('$name', '$email', '$passhash', '$phnumber', '$status')";
     $res = mysqli_query($con, $sql);
 
     if ($res) {
