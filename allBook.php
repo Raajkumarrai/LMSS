@@ -1,7 +1,6 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start(); // Start the session
-}
+session_start(); // Start the session
+
 include "./common/backendConnector.php";
 // db connection in (lms) db
 $con = mysqli_connect($host, $dbUserName, $dbPassword, $database);
@@ -9,24 +8,13 @@ if (!$con) {
     die("DB connection failed");
 }
 
-// Default values
-// $page = 1;
-// $totalFetch = 2;
-
-// // Check if page parameter is set
-// if (isset($_GET['page'])) {
-//     $page = intval($_GET['page']);
-//     $pageurl = $page;
-//     $totalFetch = $page * 2;
-// }
-
+// Fetch all books
 $sqlFetchAll = "SELECT * FROM `books`";
 $res = mysqli_query($con, $sqlFetchAll);
 
-// for searching
+// Search functionality
 if (isset($_GET['search'])) {
-    $search = isset($_GET['search']) ? $_GET['search'] : '';
-    $search = mysqli_real_escape_string($con, $search);
+    $search = mysqli_real_escape_string($con, $_GET['search']);
 
     if (!empty($search)) {
         $sqlNote = "SELECT * FROM books WHERE bname LIKE '%$search%'";
@@ -36,84 +24,111 @@ if (isset($_GET['search'])) {
 
 if (isset($_POST['preorder'])) {
     $userId = $_SESSION['id'];
-    $OrderQueryPrev = "SELECT * FROM bookorder WHERE userid = $userId AND isreturn = 0";
-    $resOrderQueryPrev = mysqli_query($con, $OrderQueryPrev);
+    $bookId = $_POST['book_id'];
 
-    if (mysqli_num_rows($resOrderQueryPrev) < 6) {
-        $bookid = $_POST['book_id'];
-        $name = $_SESSION['name'];
-        $userid = $_SESSION['id'];
-        $isreturn = 0;
-        $istaken = 0;
+    // Check if the user has reached the maximum limit of book orders
+    $maxOrderLimit = 5;
+    $orderQueryPrev = "SELECT COUNT(*) as orderCount FROM bookorder WHERE userid = $userId AND isreturn = 0";
+    $resOrderQueryPrev = mysqli_query($con, $orderQueryPrev);
 
-        $isExist = "SELECT * FROM bookorder WHERE userid = '$userid' AND bookid='$bookid' AND isreturn=0";
-        $resisExist = mysqli_query($con, $isExist);
-
-        if (mysqli_num_rows($resisExist) > 0) {
-            echo " <div class='showNotificaion error' id='showNotification'>
-            <div class='notificationshow'>
-                <div class='name'>
-                    Error:
-                </div>
-                <div class='message'>
-                    Invalid credential
-                </div>
-            </div>
-        </div>";
-        }
-
-        $bookQuery = "SELECT * FROM books WHERE id = $bookid";
-        $resBook = mysqli_query($con, $bookQuery);
-
-        if ($resBook) {
-            if (mysqli_num_rows($resBook) < 1) {
-                die("Book not found");
-            }
-
-            $rowBook = mysqli_fetch_assoc($resBook);
-
-            $sqlOrder = "INSERT INTO bookorder (username, userid, bookid, isreturn, istaken) VALUES ('$name', '$userid', '$bookid', '$isreturn', '$istaken')";
-            $resBook = mysqli_query($con, $sqlOrder);
-
-            if ($resBook) {
-                $newQuantity = intval($rowBook['bquantity']) - 1;
-                $sqlBook = "UPDATE books SET bquantity = '$newQuantity' WHERE id = '$bookid'";
-                $resBook = mysqli_query($con, $sqlBook);
-
-                if ($resBook) {
-                    $currentPage = $pageurl;
-                    $url = $_SERVER['PHP_SELF'] . "?page=" . $currentPage;
-                    header("Location: " . $url);
-                    exit();
-                } else {
-                    // Handle update failure
-                    echo "Failed to update book quantity: " . mysqli_error($con);
-                    exit();
-                }
-            } else {
-                // Handle insertion failure
-                echo "Failed to insert book order: " . mysqli_error($con);
-                exit();
-            }
-        } else {
-            // Handle query execution failure
-            echo "Query failed: " . mysqli_error($con);
-            exit();
-        }
-    } else {
-        echo " <div class='showNotificaion error' id='showNotification'>
-            <div class='notificationshow'>
-                <div class='name'>
-                    Error:
-                </div>
-                <div class='message'>
-                    Invalid credential
-                </div>
-            </div>
-        </div>";
+    if (!$resOrderQueryPrev) {
+        echo "Failed to fetch previous order count: " . mysqli_error($con);
+        exit();
     }
+
+    $rowOrderCount = mysqli_fetch_assoc($resOrderQueryPrev);
+    $orderCount = $rowOrderCount['orderCount'];
+
+    if ($orderCount >= $maxOrderLimit) {
+        echo "<div class='showNotificaion error' id='showNotification'>
+                <div class='notificationshow'>
+                    <div class='name'>
+                        Error:
+                    </div>
+                    <div class='message'>
+                        You Can't Request More Than $maxOrderLimit Books
+                    </div>
+                </div>
+            </div>";
+        exit();
+    }
+
+    // Check if the book has already been requested by the user
+    $isExistQuery = "SELECT * FROM bookorder WHERE userid = $userId AND bookid = $bookId AND isreturn = 0";
+    $resIsExist = mysqli_query($con, $isExistQuery);
+
+    if (!$resIsExist) {
+        echo "Failed to check book existence: " . mysqli_error($con);
+        exit();
+    }
+
+    if (mysqli_num_rows($resIsExist) > 0) {
+        echo "<div class='showNotificaion error' id='showNotifications' >
+        <div class='notificationshow' >
+            <div class='name' >
+                Error:
+            </div>
+            <div class='message'>
+                Book Already Requested
+            </div>
+        </div>
+    </div>";
+        exit();
+    }
+
+    // Fetch book details
+    $bookQuery = "SELECT * FROM books WHERE id = $bookId";
+    $resBook = mysqli_query($con, $bookQuery);
+
+    if (!$resBook) {
+        echo "Failed to fetch book details: " . mysqli_error($con);
+        exit();
+    }
+
+    if (mysqli_num_rows($resBook) < 1) {
+        echo "Book not found";
+        exit();
+    }
+
+    $rowBook = mysqli_fetch_assoc($resBook);
+    $newQuantity = intval($rowBook['bquantity']) - 1;
+
+    // Start a transaction for the book order and book quantity update
+    mysqli_begin_transaction($con);
+
+    $name = mysqli_real_escape_string($con, $_SESSION['name']);
+    $isreturn = 0;
+    $istaken = 0;
+
+    // Insert the book order
+    $sqlOrder = "INSERT INTO bookorder (username, userid, bookid, isreturn, istaken) VALUES ('$name', $userId, $bookId, $isreturn, $istaken)";
+    $resOrder = mysqli_query($con, $sqlOrder);
+
+    if (!$resOrder) {
+        mysqli_rollback($con);
+        echo "Failed to insert book order: " . mysqli_error($con);
+        exit();
+    }
+
+    // Update the book quantity
+    $bookUpdateQuery = "UPDATE books SET bquantity = $newQuantity WHERE id = $bookId";
+    $resBookUpdate = mysqli_query($con, $bookUpdateQuery);
+
+    if (!$resBookUpdate) {
+        mysqli_rollback($con);
+        echo "Failed to update book quantity: " . mysqli_error($con);
+        exit();
+    }
+
+    // Commit the transaction
+    mysqli_commit($con);
+
+    // Redirect the user to the current page
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
 }
 ?>
+
 
 
 
@@ -137,46 +152,47 @@ if (isset($_POST['preorder'])) {
             border: none;
         }
         
-.error {
-  color: red;
-  /* display: none; */
-  width: 100%;
-  margin-top: -30px;
-  margin-bottom: 20px;
-  letter-spacing: 1px;
-  font-size: 12px;
-  font-family: Arial, Helvetica, sans-serif;
-}
-.success {
-  background-color: rgb(0, 195, 0);
+        .error {
+    color: red;
+    width: 100%;
+    margin-top: -30px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+    font-size: 12px;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-#showNotification {
-  display: inline;
-  padding: 12px 20px;
-  letter-spacing: 1px;
-  border-radius: 3px;
-  margin-top: 10px;
-  position: absolute;
-  right: 10px;
-  transition: 0.3s;
-  z-index: 1000000000000000000000000000000000000000000000000000000000000000000000;
-  max-width: 1600px;
-  width: 200px;
-  background-color: black
+.success {
+    background-color: rgb(0, 195, 0);
+}
+
+#showNotifications {
+    display: inline;
+    padding: 12px 20px;
+    letter-spacing: 1px;
+    border-radius: 3px;
+    margin-top: 10px;
+    position: absolute;
+    right: 10px;
+    transition: 0.3s;
+    z-index: 1000000000000000000000000000000000000000000000000000000000000000000000;
+    max-width: 1600px;
+    width: 200px;
+    background-color: black;
 }
 
 .notificationshow {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
 .notificationshow .name {
-  font-weight: 600;
-  letter-spacing: 0;
+    font-weight: 600;
+    letter-spacing: 0;
 }
+
 
     </style>
 </head>
