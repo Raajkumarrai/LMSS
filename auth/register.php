@@ -117,16 +117,6 @@ if (isset($_POST['registerSubmit'])) {
         <input type="number" name="phnumber" id="Phnumber" required />
       </div>
       <span id="phoneError" class="error regErr"></span>
-      <div class="inpfld radioinp">
-        <div>
-          <input type="radio" name="profession" id="student" value="1" />
-          <label for="student">Student</label>
-        </div>
-        <div>
-          <input type="radio" name="profession" id="teacher" value="2" />
-          <label for="teacher">Teacher</label>
-        </div>
-      </div>
       <p>Already have account? <a href="./login.php">Log-in.</a></p>
       <button type="submit" name="registerSubmit" id="regBtn">SignUp</button>
     </form>

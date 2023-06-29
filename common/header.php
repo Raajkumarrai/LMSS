@@ -362,7 +362,7 @@ $resFetch = mysqli_query($con, $sqlFetch);
                                 echo
                                 '<div class="eachsection">
                                         <div class="content">
-                                            <div>Note not found</div>
+                                            <div>No Books Are Requested</div>
                                         </div>
                                     </div>
 

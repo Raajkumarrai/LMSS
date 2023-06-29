@@ -64,6 +64,13 @@ if (isset($_POST['preorder'])) {
         $isreturn = 0;
         $istaken = 0;
 
+        $isExist = "SELECT * FROM bookorder WHERE userid = '$userid' AND bookid='$bookid' AND isreturn=0";
+        $resisExist = mysqli_query($con, $isExist);
+
+        if (mysqli_num_rows($resisExist) > 0) {
+            die("You already Request");
+        }
+
         $bookQuery = "SELECT * FROM books WHERE id = $bookid";
         $resBook = mysqli_query($con, $bookQuery);
 

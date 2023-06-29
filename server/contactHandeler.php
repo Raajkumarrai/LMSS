@@ -1,6 +1,6 @@
 <?php
 
-$conn = mysqli_connect('localhost','root','','lmss');
+$conn = mysqli_connect('localhost','root','','lms');
 
 if(!$conn){
     die("Connection Failed");
@@ -13,8 +13,9 @@ $lname = $_POST['lname'];
 $email = $_POST['email'];
 $phone = $_POST['phone'];
 $message = $_POST['message'];
+$userid = $_POST['userid'];
 
-$sql = "INSERT INTO contactUs (`cont_fname`,`cont_lname`,`cont_email`,`cont_phone`,`cont_message`) VALUES ('$fname', '$lname', '$email', '$phone', '$message')";
+$sql = "INSERT INTO contactUs (`cont_fname`,`cont_lname`,`cont_email`,`cont_phone`,`cont_message`, `userid`) VALUES ('$fname', '$lname', '$email', '$phone', '$message', '$userid')";
 $res = mysqli_query($conn, $sql);
 
 if ($res){

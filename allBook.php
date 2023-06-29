@@ -46,6 +46,22 @@ if (isset($_POST['preorder'])) {
         $isreturn = 0;
         $istaken = 0;
 
+        $isExist = "SELECT * FROM bookorder WHERE userid = '$userid' AND bookid='$bookid' AND isreturn=0";
+        $resisExist = mysqli_query($con, $isExist);
+
+        if (mysqli_num_rows($resisExist) > 0) {
+            echo " <div class='showNotificaion error' id='showNotification'>
+            <div class='notificationshow'>
+                <div class='name'>
+                    Error:
+                </div>
+                <div class='message'>
+                    Invalid credential
+                </div>
+            </div>
+        </div>";
+        }
+
         $bookQuery = "SELECT * FROM books WHERE id = $bookid";
         $resBook = mysqli_query($con, $bookQuery);
 
@@ -85,7 +101,16 @@ if (isset($_POST['preorder'])) {
             exit();
         }
     } else {
-        echo "You cannot order, please wait for a day.";
+        echo " <div class='showNotificaion error' id='showNotification'>
+            <div class='notificationshow'>
+                <div class='name'>
+                    Error:
+                </div>
+                <div class='message'>
+                    Invalid credential
+                </div>
+            </div>
+        </div>";
     }
 }
 ?>
@@ -103,10 +128,56 @@ if (isset($_POST['preorder'])) {
     <link rel="stylesheet" href="./CSS/allBook.css">
     <title>All Books</title>
     <style>
+        body{
+            min-width: 1600px;
+            overflow-x: hidden;
+        }
         #search-btn {
             background-color: transparent;
             border: none;
         }
+        
+.error {
+  color: red;
+  /* display: none; */
+  width: 100%;
+  margin-top: -30px;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.success {
+  background-color: rgb(0, 195, 0);
+}
+
+#showNotification {
+  display: inline;
+  padding: 12px 20px;
+  letter-spacing: 1px;
+  border-radius: 3px;
+  margin-top: 10px;
+  position: absolute;
+  right: 10px;
+  transition: 0.3s;
+  z-index: 1000000000000000000000000000000000000000000000000000000000000000000000;
+  max-width: 1600px;
+  width: 200px;
+  background-color: black
+}
+
+.notificationshow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.notificationshow .name {
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
     </style>
 </head>
 
@@ -180,27 +251,21 @@ if (isset($_POST['preorder'])) {
             ?>
         </div>
 
-
-
-
-        <!-- for next page or view more -->
-        <!-- <div class="page-break" style="margin-bottom: 15px;">
-            <div class="line-view">
-
-            </div>
-            <div>
-                <a href="?page=<?php echo $page + 1 ?>">View More</a>
-            </div>
-            <div class="line-view">
-
-            </div>
-        </div> -->
-
     </div>
 
 
     <!-- footer section -->
     <?php include "./common/footer.php"; ?>
+    <script>
+        
+        const showNotification = document.getElementById("showNotification");
+
+        setTimeout(() => {
+            showNotification.style.right = "-200px"
+            // showNotification.style.display="none"
+
+        }, 1500);
+    </script>
 
 </body>
 

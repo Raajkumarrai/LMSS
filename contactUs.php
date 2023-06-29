@@ -1,3 +1,11 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start(); // Start the session
+}
+
+$userid = $_SESSION['id'];
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,7 +14,16 @@
     <link rel="stylesheet" href="./contact.css">
     <title>Contact Us</title>
 </head>
-
+<style>
+    .error{
+        color:red;
+        font-size:.7rem;
+        margin-top:5px;
+    }
+    #Phnumber::-webkit-inner-spin-button{
+        display: none;
+    }
+</style>
 <body>
     <?php include "./common/header.php"; ?>
     <div class="container">
@@ -28,19 +45,24 @@
                             <input class="shadow" type="text" name="lname" id="lname" placeholder="Enter Your Last Name" required>
                         </div>
                     </div>
+                    <input type="hidden" name="userid" id="userid" value="<?php echo $userid ?>">
                     <div class="contact-method">
                         <div>
                             <label for="email">E-mail</label><br>
-                            <input class="shadow" type="email" name="email" id="email" placeholder="example123@gmail.com" required>
+                            <input class="shadow" type="email" name="email" id="email" placeholder="example123@gmail.com" required autocomplete="off">
+                            <span id="emailError" class="error regErr"></span>
                         </div>
+
                         <div>
                             <label for="phone">Phone Number</label><br>
-                            <input class="shadow" type="tel" name="phone" id="phone" placeholder="+977 000-000-0000" required>
+                            <input class="shadow" type="number" name="phone" id="Phnumber" placeholder="+977 000-000-0000" required autocomplete="off">
+                            <span id="phoneError" class="error regErr"></span>
                         </div>
                     </div>
                     <div class="message">
                         <label for="message">Message or Enquiry</label><br>
                         <textarea class="shadow" name="message" id="message" cols="75" rows="10" placeholder="Write something..." required></textarea>
+                        <span id="charCount" style="margin-left:5px">0</span>/200
                     </div>
                     <div class="submit-btn">
                         <button name="contactSubmit" type="submit">Send Message</button>
@@ -291,6 +313,98 @@
     <!-- including footer content  -->
     <?php include "./common/footer.php"; ?>
 
+
+    <script>
+    const emailInput = document.getElementById("email");
+    const numberPh = document.getElementById("Phnumber");
+    const messageInput = document.getElementById('message');
+
+    const emailError = document.getElementById("emailError");
+    const phoneError = document.getElementById("phoneError");
+
+
+
+    // Email validation
+    const emailValidation = () => {
+      const email = emailInput.value.trim();
+      const emailRegex = /^\S+@\S+\.\S+$/;
+      if (email === "") {
+        emailError.textContent = "Email is required.";
+        emailError.style.display = "block";
+        return false;
+      } else if (!emailRegex.test(email)) {
+        emailError.textContent = "Invalid email format.";
+        emailError.style.display = "block";
+        return false;
+      } else if (/[0-9]/.test(email[0])) {
+        emailError.textContent = "Email should not start with a number.";
+        emailError.style.display = "block";
+        return false;
+      } else {
+        emailError.style.display = "none";
+        return true;
+      }
+    };
+
+    // Phone validation
+    const phoneValidation = () => {
+      const phoneNumber = numberPh.value.trim();
+      const phoneRegex = /^\d{10}$/;
+      if (phoneNumber === "") {
+        phoneError.textContent = "Phone number is required.";
+        phoneError.style.display = "block";
+        return false;
+      } else if (!phoneRegex.test(phoneNumber)) {
+        phoneError.textContent = "Phone number should be 10 digits.";
+        phoneError.style.display = "block";
+        return false;
+      } else {
+        phoneError.style.display = "none";
+        return true;
+      }
+    };
+
+    emailInput.addEventListener("input", emailValidation);
+    numberPh.addEventListener("input", phoneValidation);
+
+
+    // Form submission validation
+    const form = document.querySelector("form");
+    form.addEventListener("submit", function(event) {
+
+      if (!emailValidation() || !phoneValidation()) {
+        event.preventDefault();
+      } else {
+        // Form submission logic goes here
+        // Uncomment the line below if you want to allow form submission
+        // event.preventDefault();
+        return true;
+      }
+    });
+    const charCount = document.getElementById('charCount');
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const messageInput = document.getElementById('message');
+      const charCount = document.getElementById('charCount');
+      const limit = 199;
+
+      messageInput.addEventListener('input', function() {
+        const message = messageInput.value;
+
+        charCount.textContent = message.length;
+
+        if (message.length > limit) {
+          charCount.style.color = 'red';
+          messageInput.value = message.slice(0, limit); // Truncate the message to the limit
+          messageInput.focus = true; // Disable the input field
+        } else {
+          charCount.style.color = 'black';
+          messageInput.focus = false; // Enable the input field
+        }
+      });
+    });
+
+    </script>
 </body>
 
 </html>
