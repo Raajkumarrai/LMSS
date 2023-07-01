@@ -64,8 +64,8 @@ if (isset($_POST['loginSubmit'])) {
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     }
-} ?>
-
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -75,7 +75,7 @@ if (isset($_POST['loginSubmit'])) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LMS-Login</title>
-    <link rel="stylesheet" href="../CSS/login.css" />
+    <link rel="stylesheet" href="../CSS/logins.css" />
 </head>
 
 <body>
@@ -180,6 +180,8 @@ if (isset($_POST['loginSubmit'])) {
 
             if (!emailValidation()) {
                 event.preventDefault();
+                
+        showNotification.style.left = "0";
             } else {
                 return true;
             }
@@ -188,7 +190,7 @@ if (isset($_POST['loginSubmit'])) {
 
 
         setTimeout(() => {
-            showNotification.style.right = "-100%"
+            showNotification.style.right = "-200px"
         }, 1500);
     </script>
 </body>

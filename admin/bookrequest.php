@@ -105,7 +105,7 @@ if (isset($_GET['search'])) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Members</title>
+    <title>Book Request</title>
     <link rel="stylesheet" href="./sidestyles.css">
     <link rel="stylesheet" href="./CSS/messagemodel.css">
     <link rel="stylesheet" href="../CSS/globals.css">
@@ -127,7 +127,7 @@ if (isset($_GET['search'])) {
             <div id="maincontent">
             </div>
             <div class="contentTable">
-                <h2>Restricted Member of LMS:-</h2><br>
+                <h2>Requested List Of Books:-</h2><br>
                 <table>
                     <tr>
                         <th id='snTab'>S.N</th>

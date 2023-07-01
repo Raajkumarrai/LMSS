@@ -103,6 +103,9 @@ body {
   color: rgba(67, 129, 255, 0.892);
 }
 
+
+
+/* for login error  */
 .error {
   color: red;
   /* display: none; */

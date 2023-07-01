@@ -144,7 +144,7 @@ if (isset($_POST['preorder'])) {
     <title>All Books</title>
     <style>
         body{
-            min-width: 1600px;
+            max -width: 1600px;
             overflow-x: hidden;
         }
         #search-btn {

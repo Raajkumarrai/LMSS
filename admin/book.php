@@ -145,39 +145,6 @@ if (isset($_GET['delete'])) {
 
 
 
-// // for edit logic
-
-// $editId = 0;
-// $bid = "";
-// $catName = "";
-// $subcatname = "";
-// $bname = "";
-// $bauthor = "";
-// $pubName = "";
-// $bquantity = "";
-// $bimage = "";
-// $bpublishdate = "";
-
-// if (isset($_GET['edit'])) {
-//     $editId = $_GET['edit'];
-//     $editsql = "SELECT * FROM `books` WHERE `id` = $editId";
-//     $editresult = mysqli_query($con, $editsql);
-
-//     if (!$editresult) {
-//         echo "Book not found";
-//     } else {
-//         $book = mysqli_fetch_array($editresult);
-//         $bid = $book['id'];
-//         $catName = $book['categoryName'];
-//         $subcatname = $book['subcategoryName'];
-//         $bname = $book['bname'];
-//         $bauthor = $book['bauthor'];
-//         $pubName = $book['pubName'];
-//         $bquantity = $book['bquantity'];
-//         $bimage = $book['bimage'];
-//         $bpublishdate = $book['bpublishdate'];
-//     }
-// }
 
 // ======================================Update the data in the database===========================================
 $editId = 0;
