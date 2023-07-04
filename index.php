@@ -83,7 +83,7 @@ if (isset($_POST['preorder'])) {
             $rowBook = mysqli_fetch_assoc($resBook);
 
             // Insert query
-            $sqlOrder = "INSERT INTO bookorder (username, userid, bookid, isreturn, istaken) VALUES ('$name', '$userid', '$bookid', '$isreturn', '$istaken')";
+            $sqlOrder = "INSERT INTO bookorder (`username`, `userid`, `bookid`, `isreturn`, `istaken`) VALUES ('$name', '$userid', '$bookid', '$isreturn', '$istaken')";
             $resBook = mysqli_query($con, $sqlOrder);
 
             if ($resBook) {
@@ -194,7 +194,7 @@ if (isset($_POST['preorder'])) {
         <!-- Book Section -->
         <div class="bookNav">
             <div class="popular">
-                <h3>Popular</h3>
+                
             </div>
             <div class="nav-list">
                 <ul>
