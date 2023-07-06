@@ -551,7 +551,7 @@ if (isset($_GET['search'])) {
 
             </div>
         </div>
-    </div>
+    </div> 
 
 
     <script>

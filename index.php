@@ -11,7 +11,7 @@ if (!$con) {
 }
 
 // for get Book content from db
-$sqlFetchAll = "SELECT * FROM `books`";
+$sqlFetchAll = "SELECT * FROM `books` ";
 $res = mysqli_query($con, $sqlFetchAll);
 
 $sqlcategory = "SELECT * FROM `category`";
@@ -106,7 +106,7 @@ if (isset($_POST['preorder'])) {
             exit();
         }
     } else {
-        echo "You cannot order please waite for a day.";
+        echo "You cannot order please wait.";
     }
 }
 

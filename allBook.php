@@ -175,7 +175,7 @@ if (isset($_POST['preorder'])) {
     position: absolute;
     right: 10px;
     transition: 0.3s;
-    z-index: 1000000000000000000000000000000000000000000000000000000000000000000000;
+    z-index: 10;
     max-width: 1600px;
     width: 200px;
     background-color: black;
